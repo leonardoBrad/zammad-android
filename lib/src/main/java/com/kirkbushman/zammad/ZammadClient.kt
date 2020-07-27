@@ -1,8 +1,12 @@
 package com.kirkbushman.zammad
 
+import android.net.UrlQuerySanitizer
 import android.util.Base64
 import android.util.Log
 import com.kirkbushman.zammad.models.*
+import com.kirkbushman.zammad.models.auth.Auth
+import com.kirkbushman.zammad.models.auth.AuthType
+import com.kirkbushman.zammad.models.auth.Token
 import com.kirkbushman.zammad.models.compat.TicketArticleCompat
 import com.kirkbushman.zammad.models.compat.TicketCompat
 import com.kirkbushman.zammad.utils.Utils.buildRetrofit
@@ -12,11 +16,12 @@ class ZammadClient(
 
     baseUrl: String,
 
-    private val auth: String,
+    val auth: Auth,
     private val logging: Boolean
 ) {
 
-    constructor(baseUrl: String, username: String, password: String, logging: Boolean) : this(baseUrl, "$username:$password", logging)
+    constructor(baseUrl: String, username: String, password: String, logging: Boolean) : this(baseUrl, Auth(AuthType.AUTH_BASIC, username = username, password = password), logging)
+    constructor(baseUrl: String, authType: AuthType, token: Token, logging: Boolean) : this(baseUrl, Auth(authType, token = token), logging)
 
     companion object {
 
@@ -92,9 +97,71 @@ class ZammadClient(
 
             return res.body()
         }
+
+        /**
+         * oAuth2 login permform after getting @authorizeRedirectUrl from /oauth/authorize
+         */
+        fun oAuth2Login(baseUrl: String, authData: Auth, authorizeRedirectUrl: String, logging: Boolean): ZammadClient? {
+
+            val urlDecoder = UrlQuerySanitizer(authorizeRedirectUrl)
+
+            val code = urlDecoder.getValue("code")
+            val state = urlDecoder.getValue("state")
+
+            if (state != authData.state) {
+                Log.e("AUTH", "Wrong state")
+                return null
+            }
+
+            api = getApi(baseUrl, logging)
+
+            val tokenReq = api?.oAuthToken(code = code, clientId = authData.clientID ?: "", clientSecret = authData.clientSecret, redirectUri = authData.redirectUri ?: "", grantType = "authorization_code")?.execute()
+
+            if (tokenReq != null && tokenReq.isSuccessful) {
+                authData.token = tokenReq.body()
+
+                return ZammadClient(baseUrl, authData, logging)
+            }
+            return null
+        }
     }
 
     private val api = getApi(baseUrl, logging)
+
+    /**
+     * Renew the oAuth2 Bearer token
+     * @replace replace current saved token with the new token (deafault: true)
+     * @return new token
+     */
+    fun refreshToken(replace: Boolean = true): Token? {
+        if (auth.type == AuthType.OAUTH2) {
+            val authMap = auth.getHeader()
+            val req = api.oAuthToken(
+                grantType = "refresh_token",
+                refreshToken = auth.token?.refreshToken,
+                clientId = auth.clientID!!,
+                clientSecret = auth.clientSecret,
+                header = authMap
+            )
+
+            val res = req.execute()
+
+            if (res.isSuccessful) {
+                if (logging)
+                    Log.i("aAuth2 Token renew", "Renewing Token")
+
+                if (replace)
+                    auth.token = res.body()
+
+                return res.body()
+            }
+
+            if (logging) {
+                Log.i("Retrofit Error[retoken]", res.errorBody().toString())
+            }
+        }
+        return null
+    }
 
     fun me(expanded: Boolean = false): User? {
 
@@ -1284,7 +1351,41 @@ class ZammadClient(
         return res.body()
     }
 
+    fun userAccessToken(): UserAccessTokenRes? {
+        val authMap = getHeaderMap()
+        val req = api.userAccessTokens(authMap)
+        val res = req.execute()
+
+        if (res.isSuccessful) {
+            return res.body()
+        }
+        return null
+    }
+
+    fun createUserAccessToken(label: String, permission: List<String>, expiresAt: String? = null): UserAccessToken? {
+        val authMap = getHeaderMap()
+        val req = api.createUserAccessToken(label, permission, expiresAt, authMap)
+        val res = req.execute()
+
+        if (res.isSuccessful) {
+            return res.body()
+        }
+        return null
+    }
+
+    fun deleteUserAccessToken(id: Int): Boolean {
+        val authMap = getHeaderMap()
+        val req = api.deleteUserAccessToken(id, authMap)
+        val res = req.execute()
+
+        return res.isSuccessful
+    }
+
     private fun getHeaderMap(): HashMap<String, String> {
-        return hashMapOf("Authorization" to "Basic ".plus(String(Base64.encode(auth.toByteArray(), Base64.NO_WRAP))))
+        if (auth.type == AuthType.OAUTH2 && auth.token?.shouldRenew() == true) {
+            refreshToken()
+        }
+
+        return auth.getHeader()
     }
 }

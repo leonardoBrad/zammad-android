@@ -3,7 +3,7 @@
 buildscript { 
 
     ext {
-        android_gradle_ver = '4.0.0'
+        android_gradle_ver = '4.0.1'
 
         jvm_version = JavaVersion.VERSION_1_8
 
@@ -14,7 +14,7 @@ buildscript {
         ktlint_ver   = '0.37.2'
         retrofit_ver = '2.9.0'
         moshi_ver    = '1.9.3'
-        okhttp_ver   = '4.7.2'
+        okhttp_ver   = '4.8.0'
         mdc_ver      = '1.1.0'
         epoxy_ver    = '3.11.0'
         junit_ver    = '4.13'

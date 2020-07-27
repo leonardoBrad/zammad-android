@@ -28,6 +28,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activities.LoginBasicActivity" />
+        <activity android:name=".activities.LoginOAuth2Activity" />
+        <activity android:name=".activities.LoginTokenActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".activities.MeActivity" />
         <activity android:name=".activities.TicketActivity" />
@@ -64,6 +67,7 @@
         <activity android:name=".activities.ArticleActivity" />
         <activity android:name=".activities.ArticlesActivity" />
         <activity android:name=".activities.ArticleCreateActivity" />
+        <activity android:name=".activities.UserAccessTokenActivity" />
 
         <meta-data android:name="android.max_aspect" android:value="2.1" />
 

@@ -1,7 +1,10 @@
 package com.kirkbushman.sampleapp.data
 
 import android.content.Context
+import android.util.Log
 import androidx.core.content.edit
+import com.kirkbushman.zammad.models.auth.AuthType
+import com.kirkbushman.zammad.models.auth.Token
 
 class Preferences(context: Context) {
 
@@ -10,9 +13,15 @@ class Preferences(context: Context) {
         private const val APP_SHARED_PREFS = "sample_app_sample_preferences"
 
         private const val FLAG_ISLOGGED = "flag_is_logged_in"
+        private const val VAL_LOGIN_TYPE = "value_login_type"
         private const val VAL_BASEURL = "value_base_url"
         private const val VAL_USERNAME = "value_username"
         private const val VAL_PASSWORD = "value_password"
+        private const val VAL_TOKEN = "value_token"
+        private const val VAL_TOKEN_REFRESH = "value_token_refresh"
+        private const val VAL_TOKEN_CREATED_AT = "value_token_created_At"
+        private const val VAL_TOKEN_EXPIREIN = "value_token_expire_in"
+        private const val VAL_TOKEN_TYPE = "value_token_type"
     }
 
     private val prefs by lazy { context.getSharedPreferences(APP_SHARED_PREFS, Context.MODE_PRIVATE) }
@@ -22,6 +31,14 @@ class Preferences(context: Context) {
         prefs.edit {
 
             putBoolean(FLAG_ISLOGGED, isLoggedIn)
+        }
+    }
+
+    fun getLoginMode(): AuthType = AuthType.valueOf(prefs.getString(VAL_LOGIN_TYPE, AuthType.AUTH_BASIC.toString()) ?: AuthType.AUTH_BASIC.toString())
+    fun setLoginMode(authType: AuthType) {
+        prefs.edit {
+
+            putString(VAL_LOGIN_TYPE, authType.toString())
         }
     }
 
@@ -46,6 +63,39 @@ class Preferences(context: Context) {
         prefs.edit {
 
             putString(VAL_PASSWORD, password)
+        }
+    }
+
+    fun getToken(): Token? {
+        val token = prefs.getString(VAL_TOKEN, null)
+        val t = prefs.getString(VAL_TOKEN_TYPE, null)
+
+        if (!token.isNullOrBlank() && t != null)
+            return Token(
+                token = token,
+                tokenType = t,
+                expireIn = prefs.getLong(VAL_TOKEN_EXPIREIN, 300),
+                createdAt = prefs.getLong(VAL_TOKEN_CREATED_AT, 0),
+                refreshToken = prefs.getString(VAL_TOKEN_REFRESH, null)
+            )
+        return null
+    }
+
+    fun setToken(token: Token?) {
+        Log.d("SAVE", token.toString())
+        prefs.edit {
+            if (token != null) {
+                putString(VAL_TOKEN, token.token)
+                putString(VAL_TOKEN_TYPE, token.tokenType)
+
+                if (token.refreshToken != null)
+                    putString(VAL_TOKEN_REFRESH, token.refreshToken)
+
+                if (token.createdAt != null)
+                    putLong(VAL_TOKEN_CREATED_AT, token.createdAt!!)
+                if (token.expireIn != null)
+                    putLong(VAL_TOKEN_EXPIREIN, token.expireIn!!)
+            }
         }
     }
 }

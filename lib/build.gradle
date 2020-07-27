@@ -11,7 +11,11 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testHandleProfiling true
+        testFunctionalTest true
     }
 
     compileOptions {
@@ -36,9 +40,8 @@ kapt {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    testImplementation 'junit:junit:4.13'
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_ver"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_ver"
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_ver"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_ver"

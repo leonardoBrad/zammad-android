@@ -2,12 +2,28 @@ package com.kirkbushman.zammad
 
 import com.kirkbushman.zammad.models.*
 import com.kirkbushman.zammad.models.Tag
+import com.kirkbushman.zammad.models.auth.Token
+import com.kirkbushman.zammad.models.UserAccessToken
 import com.kirkbushman.zammad.models.compat.TicketCompat
+import com.kirkbushman.zammad.utils.Utils.getUUID
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
 interface ZammadApi {
+
+    @FormUrlEncoded
+    @POST("/oauth/token")
+    fun oAuthToken(
+        @Field("grant_type") grantType: String,
+        @Field("code") code: String? = null,
+        @Field("redirect_uri") redirectUri: String? = null,
+        @Field("refresh_token") refreshToken: String? = null,
+        @Field("client_id") clientId: String,
+        @Field("client_secret") clientSecret: String? = null,
+        @Field("device_code") deviceId: String = getUUID(),
+        @HeaderMap header: HashMap<String, String> = HashMap()
+    ): Call<Token>
 
     @GET("/api/v1/users/me")
     fun me(
@@ -437,4 +453,24 @@ interface ZammadApi {
     fun markAllOnlineNotificationsAsRead(
         @HeaderMap header: HashMap<String, String>
     ): Call<Any>
+
+    @GET("/api/v1/user_access_token")
+    fun userAccessTokens(
+        @HeaderMap header: HashMap<String, String>
+    ): Call<UserAccessTokenRes>
+
+    @FormUrlEncoded
+    @POST("/api/v1/user_access_token")
+    fun createUserAccessToken(
+        @Field("label") label: String,
+        @Field("permission") permissions: List<String>,
+        @Field("expires_at") expiresAt: String?,
+        @HeaderMap header: HashMap<String, String>
+    ): Call<UserAccessToken>
+
+    @DELETE("/api/v1/user_access_token/{id}")
+    fun deleteUserAccessToken(
+        @Path("id") id: Int,
+        @HeaderMap header: HashMap<String, String>
+    ): Call<ResponseBody>
 }

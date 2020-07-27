@@ -30,29 +30,44 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:gravity="center"
-                android:text="@string/select_login"
                 android:textSize="21sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:text="@string/title_login"/>
+
+        <EditText
+                android:id="@+id/baseurl_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:inputType="text"
+                android:hint="@string/hint_baseurl"
+                android:importantForAutofill="no" />
+
+        <EditText
+                android:id="@+id/email_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:inputType="textEmailAddress"
+                android:hint="@string/hint_username"
+                android:importantForAutofill="no" />
+
+        <EditText
+                android:id="@+id/password_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:inputType="textPassword"
+                android:hint="@string/hint_password"
+                android:importantForAutofill="no" />
 
         <Button
-                android:id="@+id/bttn_basic"
+                android:id="@+id/bttn_submit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/bttn_basic" />
-
-        <Button
-                android:id="@+id/bttn_token"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="@string/bttn_token" />
-        <Button
-                android:id="@+id/bttn_oauth2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="@string/bttn_oauth2" />
+                android:text="@string/bttn_submit"
+        />
 
     </LinearLayout>
 

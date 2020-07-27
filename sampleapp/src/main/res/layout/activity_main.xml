@@ -126,6 +126,20 @@
                     android:layout_margin="8dp"
                     android:text="@string/bttn_notifications" />
 
+            <Button
+                    android:id="@+id/bttn_access_token"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/bttn_access_token" />
+
+            <Button
+                    android:id="@+id/bttn_token_refresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/bttn_token_refresh" />
+
         </LinearLayout>
     </ScrollView>
 

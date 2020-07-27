@@ -10,6 +10,20 @@ import java.util.*
 
 object Utils {
 
+    private val STRING_CHARACTERS = ('0'..'9').plus('a'..'z').toTypedArray()
+
+    fun addParamsToUrl(url: String, array: Array<String>): String {
+        return url.plus(array.joinToString(separator = "&", prefix = "?"))
+    }
+
+    fun generateRandomString(): String {
+        return (1..32).map { STRING_CHARACTERS.random() }.joinToString("")
+    }
+
+    fun getUUID(): String {
+        return UUID.randomUUID().toString()
+    }
+
     fun convertStringToDate(dateStr: String): Date? {
         val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return format.parse(dateStr.replace('T', ' ').replace('Z', ' '))
