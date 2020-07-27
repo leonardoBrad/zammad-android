@@ -21,9 +21,9 @@ import kotlinx.android.synthetic.main.activity_login_oauth.*
 
 class LoginOAuth2Activity : AppCompatActivity() {
 
-    val CLIENT_ID = "wokjNRE2IvXvRvAAx_Dcf2kaT-X4gcgOIt6QCXZctoc"
-    val CLIENT_SECRET = "gaeIPt4zSm1hR4L6WfLGcDzxGxFj1-33sz89brqIb4Y"
-    val REDIRECT_URL = "https://github.com/KirkBushman/zammad-android"
+    val CLIENT_ID = "your_client_id"
+    val CLIENT_SECRET = "your_client_secret"
+    val REDIRECT_URL = "your_redirect_url"
 
     lateinit var authClient: Auth
 

@@ -82,7 +82,7 @@ class Preferences(context: Context) {
     }
 
     fun setToken(token: Token?) {
-        Log.d("SAVE", token.toString())
+
         prefs.edit {
             if (token != null) {
                 putString(VAL_TOKEN, token.token)
